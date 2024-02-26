@@ -1,0 +1,13 @@
+<mapper namespace="cn.xuguowen.dao.UserDao">
+
+    <select id="queryAll" resultType="cn.xuguowen.pojo.User">
+        select
+            id,
+            userId,
+            userHead,
+            userName,
+            createTime,
+            updateTime
+        from user
+    </select>
+</mapper>

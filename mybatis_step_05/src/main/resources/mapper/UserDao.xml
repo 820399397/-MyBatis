@@ -1,0 +1,7 @@
+<mapper namespace="cn.xuguowen.mybatis.dao.UserDao">
+    <select id="queryNameById" parameterType="java.lang.Long" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where id = #{id}
+    </select>
+</mapper>
