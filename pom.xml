@@ -6,6 +6,7 @@
 
     <!--mybatis源码地址-->
     <!-- https://github.com/fuzhengwei/book-small-mybatis -->
+    <!-- https://mp.weixin.qq.com/s/smohXRphj-FejvrP-FOgBw -->
 
     <groupId>cn.xuguowen</groupId>
     <artifactId>mybatis-source-code</artifactId>
@@ -19,6 +20,9 @@
         <module>mybatis_step_03</module>
         <module>mybatis_step_04</module>
         <module>mybatis_step_05</module>
+        <module>mybatis_step_06</module>
+        <module>mybatis_step_07</module>
+        <module>mybatis_step_08</module>
     </modules>
 
     <properties>
