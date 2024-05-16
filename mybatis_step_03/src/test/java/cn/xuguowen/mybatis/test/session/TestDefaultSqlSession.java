@@ -33,6 +33,7 @@ public class TestDefaultSqlSession {
         StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
         System.out.println(studentDao.queryAddressById());
 
+        // 没走代理处理器类中的invoke方法，也就是没有通过代理对象去调用方法
         Object o = sqlSession.selectOne("cn.xuguowen.mybatis.dao.StudentDao.queryAddressById");
         System.out.println(o);
 

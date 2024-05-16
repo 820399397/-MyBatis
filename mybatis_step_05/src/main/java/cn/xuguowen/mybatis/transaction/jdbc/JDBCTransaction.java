@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * ClassName: JDBCTransaction
  * Package: cn.xuguowen.mybatis.transaction.jdbc
- * Description:
+ * Description:在 JDBC 事务实现类中，封装了获取链接、提交事务等操作，其实使用的也就是 JDBC 本身提供的能力
  *
  * @Author 徐国文
  * @Create 2024/2/15 21:10

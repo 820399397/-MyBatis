@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * ClassName: Configuration
  * Package: cn.xuguowen.mybatis.session
- * Description:
+ * Description:整个 Mybatis 的操作都是使用 Configuration 配置项进行串联流程，所以所有内容都会在 Configuration 中进行链接
  *
  * @Author 徐国文
  * @Create 2024/2/14 20:56
@@ -34,6 +34,7 @@ public class Configuration {
     // 类型别名注册机
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 
+    // 在 Configuration 配置选项类中，添加类型别名注册机，通过构造函数添加 JDBC、DRUID 注册操作。
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);

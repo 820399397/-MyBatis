@@ -21,7 +21,6 @@ public class MapperProxyFactory<T> {
     }
 
     public T newInstance(Map<String,String> sqlSession) {
-
         MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession,mapperInterface);
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }

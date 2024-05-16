@@ -9,7 +9,7 @@ import java.sql.Connection;
 /**
  * ClassName: TransactionFactory
  * Package: cn.xuguowen.mybatis.transaction
- * Description:
+ * Description:以工厂方法模式包装 JDBC 事务实现，为每一个事务实现都提供一个对应的工厂。与简单工厂的接口包装不同。
  *
  * @Author 徐国文
  * @Create 2024/2/15 21:15
