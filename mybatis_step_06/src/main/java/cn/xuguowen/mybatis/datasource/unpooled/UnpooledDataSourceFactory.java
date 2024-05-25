@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * ClassName: UnpooledDataSourceFactory
  * Package: cn.xuguowen.mybatis.datasource.unpooled
- * Description:
+ * Description:无池化工厂
  *
  * @Author 徐国文
  * @Create 2024/2/28 13:38

@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 /**
  * ClassName: PooledDataSourceFactory
  * Package: cn.xuguowen.mybatis.datasource.pooled
- * Description:
+ * Description:有池化工厂
  *
  * @Author 徐国文
  * @Create 2024/2/28 13:39
