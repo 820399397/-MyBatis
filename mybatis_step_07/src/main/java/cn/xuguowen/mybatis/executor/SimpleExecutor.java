@@ -28,6 +28,15 @@ public class SimpleExecutor extends BaseExecutor{
         super(configuration, transaction);
     }
 
+    /**
+     * 子类需要实现该方法以执行具体的查询逻辑。通过这种方式，具体的查询细节可以在不同的子类中有不同的实现。
+     * @param ms
+     * @param parameter
+     * @param resultHandler
+     * @param boundSql
+     * @return
+     * @param <E>
+     */
     @Override
     protected <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
         try {
