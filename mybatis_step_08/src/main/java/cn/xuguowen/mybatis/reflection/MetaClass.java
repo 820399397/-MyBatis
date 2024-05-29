@@ -163,6 +163,7 @@ public class MetaClass {
     public boolean hasGetter(String name) {
         PropertyTokenizer prop = new PropertyTokenizer(name);
         if (prop.hasNext()) {
+            // 递归获取
             if (reflector.hasGetter(prop.getName())) {
                 MetaClass metaProp = metaClassForProperty(prop);
                 return metaProp.hasGetter(prop.getChildren());

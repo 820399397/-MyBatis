@@ -222,6 +222,7 @@ public class Reflector {
                     // modification of final fields through reflection (JSR-133). (JGB)
                     // pr #16 - final static can only be set by the classloader
                     int modifiers = field.getModifiers();
+                    // 如果字段既不是final也不是static
                     if (!(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers))) {
                         addSetField(field);
                     }
