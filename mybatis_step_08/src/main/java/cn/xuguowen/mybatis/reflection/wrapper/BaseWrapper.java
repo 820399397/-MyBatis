@@ -9,22 +9,33 @@ import java.util.Map;
 /**
  * ClassName: BaseWrapper
  * Package: cn.xuguowen.mybatis.reflection.wrapper
- * Description:
+ * Description:抽象基类，用于实现对象包装器接口，提供处理集合属性的方法。
  *
  * @Author 徐国文
  * @Create 2024/3/4 12:28
  * @Version 1.0
  */
 public abstract class BaseWrapper implements ObjectWrapper{
+
+    // 无参数的常量
     protected static final Object[] NO_ARGUMENTS = new Object[0];
+
+    // 元对象
     protected MetaObject metaObject;
 
+    /**
+     * 构造函数，初始化 MetaObject。
+     * @param metaObject MetaObject 实例
+     */
     protected BaseWrapper(MetaObject metaObject) {
         this.metaObject = metaObject;
     }
 
     /**
-     * 解析集合
+     * 解析集合属性。
+     * @param prop 属性分词器
+     * @param object 对象
+     * @return 如果属性名为空，返回对象本身；否则，返回属性值
      */
     protected Object resolveCollection(PropertyTokenizer prop, Object object) {
         if ("".equals(prop.getName())) {
@@ -35,8 +46,11 @@ public abstract class BaseWrapper implements ObjectWrapper{
     }
 
     /**
-     * 取集合的值
-     * 中括号有2个意思，一个是Map，一个是List或数组
+     * 获取集合的值。
+     * 中括号有两种含义，可以表示 Map 或 List/数组。
+     * @param prop 属性分词器
+     * @param collection 集合对象
+     * @return 集合中的值
      */
     protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
         if (collection instanceof Map) {
@@ -72,8 +86,11 @@ public abstract class BaseWrapper implements ObjectWrapper{
     }
 
     /**
-     * 设集合的值
-     * 中括号有2个意思，一个是Map，一个是List或数组
+     * 设置集合的值。
+     * 中括号有两种含义，可以表示 Map 或 List/数组。
+     * @param prop 属性分词器
+     * @param collection 集合对象
+     * @param value 要设置的值
      */
     protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
         if (collection instanceof Map) {

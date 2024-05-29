@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * ClassName: DefaultObjectFactory
  * Package: cn.xuguowen.mybatis.reflection.factory
- * Description:
+ * Description:默认对象工厂实现类，用于创建对象实例，支持使用默认构造函数或指定构造函数进行对象的实例化。
  *
  * @Author 徐国文
  * @Create 2024/3/4 13:03
@@ -79,6 +79,9 @@ public class DefaultObjectFactory implements ObjectFactory{
 
     /**
      * 解析接口，将 interface 转换为实际的 class 类
+     *
+     * @param type 接口类型
+     * @return 实际的类类型
      */
     protected Class<?> resolveInterface(Class<?> type) {
         Class<?> classToCreate;

@@ -1,6 +1,7 @@
 package cn.xuguowen.mybatis.pojo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * ClassName: User
@@ -24,6 +25,16 @@ public class User {
     private Date updateTime;
 
     private String userName;
+
+    private List<Integer> scores;
+
+    public List<Integer> getScores() {
+        return scores;
+    }
+
+    public void setScores(List<Integer> scores) {
+        this.scores = scores;
+    }
 
     public Long getId() {
         return id;

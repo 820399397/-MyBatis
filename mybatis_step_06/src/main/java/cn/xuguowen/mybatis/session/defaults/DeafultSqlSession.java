@@ -1,6 +1,5 @@
 package cn.xuguowen.mybatis.session.defaults;
 
-import cn.xuguowen.mybatis.binding.MapperRegistry;
 import cn.xuguowen.mybatis.mapping.Environment;
 import cn.xuguowen.mybatis.mapping.MappedStatement;
 import cn.xuguowen.mybatis.session.Configuration;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * ClassName: DeafultSqlSession

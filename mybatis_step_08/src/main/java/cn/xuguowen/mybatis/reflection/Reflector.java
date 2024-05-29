@@ -1,23 +1,20 @@
 package cn.xuguowen.mybatis.reflection;
 
+import cn.xuguowen.mybatis.pojo.User;
 import cn.xuguowen.mybatis.reflection.invoker.GetFieldInvoker;
 import cn.xuguowen.mybatis.reflection.invoker.Invoker;
 import cn.xuguowen.mybatis.reflection.invoker.MethodInvoker;
 import cn.xuguowen.mybatis.reflection.invoker.SetFieldInvoker;
 import cn.xuguowen.mybatis.reflection.property.PropertyNamer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ReflectPermission;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ClassName: Reflector
  * Package: cn.xuguowen.mybatis.reflection
- * Description:
+ * Description:通过反射获取类的元数据（构造函数、getter、setter等）并缓存，提高反射操作的效率
  *
  * @Author 徐国文
  * @Create 2024/3/4 12:02
@@ -25,30 +22,45 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Reflector {
 
+    // 是否启用类缓存
     private static boolean classCacheEnabled = true;
 
+    // 空字符串数组常量
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    // 线程安全的缓存
+
+    // 线程安全的类反射信息缓存
     private static final Map<Class<?>, Reflector> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
+    // 被反射的类
     private Class<?> type;
-    // get 属性列表
+    // get 属性列表: 可读属性名称列表
     private String[] readablePropertyNames = EMPTY_STRING_ARRAY;
-    // set 属性列表
+    // set 属性列表: 可写属性名称列表
     private String[] writeablePropertyNames = EMPTY_STRING_ARRAY;
-    // set 方法列表
+
+    // set 方法列表：属性对应的 set 方法映射
     private Map<String, Invoker> setMethods = new HashMap<>();
-    // get 方法列表
+
+    // get 方法列表：属性对应的 get 方法映射
     private Map<String, Invoker> getMethods = new HashMap<>();
-    // set 类型列表
+
+    // set 类型列表：属性对应的 set 方法参数类型映射
     private Map<String, Class<?>> setTypes = new HashMap<>();
-    // get 类型列表
+
+    // get 类型列表：属性对应的 get 方法返回类型映射
     private Map<String, Class<?>> getTypes = new HashMap<>();
-    // 构造函数
+
+    // 默认构造函数
     private Constructor<?> defaultConstructor;
 
+    // 大小写不敏感的属性名称映射
     private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
+    /**
+     * 构造函数，通过反射获取类的元数据
+     *
+     * @param clazz 要反射的类
+     */
     public Reflector(Class<?> clazz) {
         this.type = clazz;
         // 加入构造函数
@@ -69,6 +81,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加默认构造函数
+     *
+     * @param clazz 要反射的类
+     */
     private void addDefaultConstructor(Class<?> clazz) {
         Constructor<?>[] consts = clazz.getDeclaredConstructors();
         for (Constructor<?> constructor : consts) {
@@ -87,6 +104,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加 getter 方法
+     *
+     * @param clazz 要反射的类
+     */
     private void addGetMethods(Class<?> clazz) {
         Map<String, List<Method>> conflictingGetters = new HashMap<>();
         Method[] methods = getClassMethods(clazz);
@@ -107,6 +129,11 @@ public class Reflector {
         resolveGetterConflicts(conflictingGetters);
     }
 
+    /**
+     * 添加 setter 方法
+     *
+     * @param clazz 要反射的类
+     */
     private void addSetMethods(Class<?> clazz) {
         Map<String, List<Method>> conflictingSetters = new HashMap<>();
         Method[] methods = getClassMethods(clazz);
@@ -122,6 +149,11 @@ public class Reflector {
         resolveSetterConflicts(conflictingSetters);
     }
 
+    /**
+     * 解决 setter 方法冲突
+     *
+     * @param conflictingSetters 冲突的 setter 方法映射
+     */
     private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
         for (String propName : conflictingSetters.keySet()) {
             List<Method> setters = conflictingSetters.get(propName);
@@ -156,6 +188,12 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加 setter 方法
+     *
+     * @param name   属性名称
+     * @param method setter 方法
+     */
     private void addSetMethod(String name, Method method) {
         if (isValidPropertyName(name)) {
             setMethods.put(name, new MethodInvoker(method));
@@ -163,6 +201,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加字段
+     *
+     * @param clazz 要反射的类
+     */
     private void addFields(Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
@@ -193,6 +236,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加 setter 字段
+     *
+     * @param field 字段
+     */
     private void addSetField(Field field) {
         if (isValidPropertyName(field.getName())) {
             setMethods.put(field.getName(), new SetFieldInvoker(field));
@@ -200,6 +248,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加 getter 字段
+     *
+     * @param field 字段
+     */
     private void addGetField(Field field) {
         if (isValidPropertyName(field.getName())) {
             getMethods.put(field.getName(), new GetFieldInvoker(field));
@@ -207,6 +260,11 @@ public class Reflector {
         }
     }
 
+    /**
+     * 解决 getter 方法冲突
+     *
+     * @param conflictingGetters 冲突的 getter 方法映射
+     */
     private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
         for (String propName : conflictingGetters.keySet()) {
             List<Method> getters = conflictingGetters.get(propName);
@@ -240,6 +298,12 @@ public class Reflector {
         }
     }
 
+    /**
+     * 添加 getter 方法
+     *
+     * @param name   属性名称
+     * @param method getter 方法
+     */
     private void addGetMethod(String name, Method method) {
         if (isValidPropertyName(name)) {
             getMethods.put(name, new MethodInvoker(method));
@@ -247,15 +311,34 @@ public class Reflector {
         }
     }
 
+    /**
+     * 验证属性名称是否合法
+     *
+     * @param name 属性名称
+     * @return 是否合法
+     */
     private boolean isValidPropertyName(String name) {
         return !(name.startsWith("$") || "serialVersionUID".equals(name) || "class".equals(name));
     }
 
+    /**
+     * 添加方法冲突
+     *
+     * @param conflictingMethods 冲突的方法映射
+     * @param name               属性名称
+     * @param method             方法
+     */
     private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
         List<Method> list = conflictingMethods.computeIfAbsent(name, k -> new ArrayList<>());
         list.add(method);
     }
 
+    /**
+     * 获取类的方法，包括其父类和接口的方法
+     *
+     * @param cls 要反射的类
+     * @return 方法数组
+     */
     private Method[] getClassMethods(Class<?> cls) {
         Map<String, Method> uniqueMethods = new HashMap<String, Method>();
         Class<?> currentClass = cls;
@@ -277,6 +360,12 @@ public class Reflector {
         return methods.toArray(new Method[methods.size()]);
     }
 
+    /**
+     * 添加唯一的方法
+     *
+     * @param uniqueMethods 唯一方法映射
+     * @param methods       方法数组
+     */
     private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
         for (Method currentMethod : methods) {
             if (!currentMethod.isBridge()) {
@@ -300,6 +389,12 @@ public class Reflector {
         }
     }
 
+    /**
+     * 获取方法签名
+     *
+     * @param method 方法
+     * @return 签名字符串
+     */
     private String getSignature(Method method) {
         StringBuilder sb = new StringBuilder();
         Class<?> returnType = method.getReturnType();
@@ -319,6 +414,11 @@ public class Reflector {
         return sb.toString();
     }
 
+    /**
+     * 检查是否可以访问私有方法
+     *
+     * @return 是否可以访问
+     */
     private static boolean canAccessPrivateMethods() {
         try {
             SecurityManager securityManager = System.getSecurityManager();
@@ -332,10 +432,20 @@ public class Reflector {
     }
 
 
+    /**
+     * 获取被反射的类
+     *
+     * @return 被反射的类
+     */
     public Class<?> getType() {
         return type;
     }
 
+    /**
+     * 获取默认构造函数
+     *
+     * @return 默认构造函数
+     */
     public Constructor<?> getDefaultConstructor() {
         if (defaultConstructor != null) {
             return defaultConstructor;
@@ -344,10 +454,21 @@ public class Reflector {
         }
     }
 
+    /**
+     * 是否有默认构造函数
+     *
+     * @return 是否有默认构造函数
+     */
     public boolean hasDefaultConstructor() {
         return defaultConstructor != null;
     }
 
+    /**
+     * 获取属性的 setter 方法类型
+     *
+     * @param propertyName 属性名称
+     * @return setter 方法类型
+     */
     public Class<?> getSetterType(String propertyName) {
         Class<?> clazz = setTypes.get(propertyName);
         if (clazz == null) {
@@ -356,6 +477,12 @@ public class Reflector {
         return clazz;
     }
 
+    /**
+     * 获取属性的 getter 方法调用器
+     *
+     * @param propertyName 属性名称
+     * @return getter 方法调用器
+     */
     public Invoker getGetInvoker(String propertyName) {
         Invoker method = getMethods.get(propertyName);
         if (method == null) {
@@ -364,6 +491,12 @@ public class Reflector {
         return method;
     }
 
+    /**
+     * 获取属性的 setter 方法调用器
+     *
+     * @param propertyName 属性名称
+     * @return setter 方法调用器
+     */
     public Invoker getSetInvoker(String propertyName) {
         Invoker method = setMethods.get(propertyName);
         if (method == null) {
@@ -372,11 +505,11 @@ public class Reflector {
         return method;
     }
 
-    /*
-     * Gets the type for a property getter
+    /**
+     * 获取属性的 getter 方法类型
      *
-     * @param propertyName - the name of the property
-     * @return The Class of the propery getter
+     * @param propertyName 属性名称
+     * @return getter 方法类型
      */
     public Class<?> getGetterType(String propertyName) {
         Class<?> clazz = getTypes.get(propertyName);
@@ -386,54 +519,59 @@ public class Reflector {
         return clazz;
     }
 
-    /*
-     * Gets an array of the readable properties for an object
+    /**
+     * 获取可读属性名称数组
      *
-     * @return The array
+     * @return 可读属性名称数组
      */
     public String[] getGetablePropertyNames() {
         return readablePropertyNames;
     }
 
-    /*
-     * Gets an array of the writeable properties for an object
+    /**
+     * 获取可写属性名称数组
      *
-     * @return The array
+     * @return 可写属性名称数组
      */
     public String[] getSetablePropertyNames() {
         return writeablePropertyNames;
     }
 
-    /*
-     * Check to see if a class has a writeable property by name
+    /**
+     * 检查类是否具有指定名称的可写属性
      *
-     * @param propertyName - the name of the property to check
-     * @return True if the object has a writeable property by the name
+     * @param propertyName 属性名称
+     * @return 是否具有该可写属性
      */
     public boolean hasSetter(String propertyName) {
         return setMethods.keySet().contains(propertyName);
     }
 
-    /*
-     * Check to see if a class has a readable property by name
+    /**
+     * 检查类是否具有指定名称的可读属性
      *
-     * @param propertyName - the name of the property to check
-     * @return True if the object has a readable property by the name
+     * @param propertyName 属性名称
+     * @return 是否具有该可读属性
      */
     public boolean hasGetter(String propertyName) {
         return getMethods.keySet().contains(propertyName);
     }
 
+    /**
+     * 查找属性名（忽略大小写）
+     *
+     * @param name 属性名称
+     * @return 属性名称
+     */
     public String findPropertyName(String name) {
         return caseInsensitivePropertyMap.get(name.toUpperCase(Locale.ENGLISH));
     }
 
-    /*
-     * Gets an instance of ClassInfo for the specified class.
-     * 得到某个类的反射器，是静态方法，而且要缓存，又要多线程，所以REFLECTOR_MAP是一个ConcurrentHashMap
+    /**
+     * 获取类的反射器，如果启用缓存则从缓存中获取
      *
-     * @param clazz The class for which to lookup the method cache.
-     * @return The method cache for the class
+     * @param clazz 要反射的类
+     * @return 反射器
      */
     public static Reflector forClass(Class<?> clazz) {
         if (classCacheEnabled) {
@@ -450,11 +588,49 @@ public class Reflector {
         }
     }
 
+    /**
+     * 设置是否启用类缓存
+     *
+     * @param classCacheEnabled 是否启用类缓存
+     */
     public static void setClassCacheEnabled(boolean classCacheEnabled) {
         Reflector.classCacheEnabled = classCacheEnabled;
     }
 
+    /**
+     * 是否启用类缓存
+     *
+     * @return 是否启用类缓存
+     */
     public static boolean isClassCacheEnabled() {
         return classCacheEnabled;
+    }
+
+    public static void main(String[] args) throws Exception {
+        // 获取 Person 类的 Reflector
+        Reflector reflector = Reflector.forClass(User.class);
+
+        // 创建 Person 类的实例
+        Constructor<?> constructor = reflector.getDefaultConstructor();
+        User user = (User) constructor.newInstance();
+
+        // 设置属性值
+        Invoker setNameInvoker = reflector.getSetInvoker("userName");
+        setNameInvoker.invoke(user, new Object[]{"John"});
+
+        Invoker setUserIdInvoker = reflector.getSetInvoker("userId");
+        setUserIdInvoker.invoke(user, new Object[]{"25"});
+
+        // 获取属性值
+        Invoker getNameInvoker = reflector.getGetInvoker("userName");
+        String name = (String) getNameInvoker.invoke(user, new Object[]{});
+
+        Invoker getUserIdInvoker = reflector.getGetInvoker("userId");
+        String userId = (String) getUserIdInvoker.invoke(user, new Object[]{});
+
+        // 打印结果
+        System.out.println("name: " + name);
+        System.out.println("userId: " + userId);
+
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * ClassName: ObjectWrapper
  * Package: cn.xuguowen.mybatis.reflection.wrapper
- * Description:
+ * Description:该接口定义了用于包装和操作对象的方法。它提供了获取和设置属性、查找属性名、获取getter和setter方法名和类型、检查getter和setter是否存在以及管理集合的方法。
  *
  * @Author 徐国文
  * @Create 2024/3/4 12:12

@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * ClassName: PropertyNamer
  * Package: cn.xuguowen.mybatis.reflection.property
- * Description:
+ * Description:属性命名器工具类，用于将方法名转换为属性名，以及判断方法是否为getter或setter。
  *
  * @Author 徐国文
  * @Create 2024/3/4 15:47
@@ -13,11 +13,15 @@ import java.util.Locale;
  */
 public class PropertyNamer {
 
+    // 私有构造函数，防止实例化
     private PropertyNamer() {
     }
 
     /**
-     * 方法转换为属性
+     * 将方法名转换为属性名。
+     * @param name 方法名
+     * @return 属性名
+     * @throws RuntimeException 如果方法名不以 'is', 'get' 或 'set' 开头，将抛出异常
      */
     public static String methodToProperty(String name) {
         if (name.startsWith("is")) {
@@ -40,21 +44,27 @@ public class PropertyNamer {
     }
 
     /**
-     * 开头判断get/set/is
+     * 判断方法名是否为属性方法（以 'get', 'set' 或 'is' 开头）。
+     * @param name 方法名
+     * @return 如果方法名是属性方法，返回 true；否则返回 false
      */
     public static boolean isProperty(String name) {
         return name.startsWith("get") || name.startsWith("set") || name.startsWith("is");
     }
 
     /**
-     * 是否为 getter
+     * 判断方法名是否为 getter 方法（以 'get' 或 'is' 开头）。
+     * @param name 方法名
+     * @return 如果方法名是 getter 方法，返回 true；否则返回 false
      */
     public static boolean isGetter(String name) {
         return name.startsWith("get") || name.startsWith("is");
     }
 
     /**
-     * 是否为 setter
+     * 判断方法名是否为 setter 方法（以 'set' 开头）。
+     * @param name 方法名
+     * @return 如果方法名是 setter 方法，返回 true；否则返回 false
      */
     public static boolean isSetter(String name) {
         return name.startsWith("set");
