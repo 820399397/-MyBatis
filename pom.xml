@@ -23,6 +23,7 @@
         <module>mybatis_step_06</module>
         <module>mybatis_step_07</module>
         <module>mybatis_step_08</module>
+        <module>mybatis_step_09</module>
     </modules>
 
     <properties>
@@ -99,6 +100,13 @@
             <artifactId>druid</artifactId>
             <version>1.2.18</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>
