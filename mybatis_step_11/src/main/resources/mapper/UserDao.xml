@@ -1,0 +1,21 @@
+<mapper namespace="cn.xuguowen.mybatis.dao.UserDao">
+    <select id="queryNameById" parameterType="java.lang.Long" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where id = #{id}
+    </select>
+
+    <select id="queryByName" parameterType="java.lang.String" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where userName = #{userName}
+    </select>
+
+
+    <select id="selectOne" parameterType="cn.xuguowen.mybatis.pojo.User" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where id = #{id} and userName = #{userName}
+    </select>
+
+</mapper>
