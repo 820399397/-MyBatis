@@ -1,0 +1,42 @@
+<mapper namespace="cn.xuguowen.mybatis.dao.UserDao">
+    <select id="queryNameById" parameterType="java.lang.Long" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where id = #{id}
+    </select>
+
+    <select id="queryByName" parameterType="java.lang.String" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where userName = #{userName}
+    </select>
+
+
+    <select id="selectOne" parameterType="cn.xuguowen.mybatis.pojo.User" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+        where id = #{id} and userName = #{userName}
+    </select>
+
+    <select id="selectAll" resultType="cn.xuguowen.mybatis.pojo.User">
+        select id,userId,userHead,createTime,updateTime,userName
+        from user
+    </select>
+
+    <update id="updateUser" parameterType="cn.xuguowen.mybatis.pojo.User">
+        UPDATE user
+        SET userName = #{userName}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertUser" parameterType="cn.xuguowen.mybatis.pojo.User">
+        INSERT INTO user
+        (userId, userName, userHead, createTime, updateTime)
+        VALUES (#{userId}, #{userName}, #{userHead}, now(), now())
+    </insert>
+
+    <delete id="deleteUser" parameterType="java.lang.String">
+        DELETE FROM user WHERE userId = #{userId}
+    </delete>
+
+</mapper>

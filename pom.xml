@@ -26,6 +26,7 @@
         <module>mybatis_step_09</module>
 		<module>mybatis_step_10</module>
         <module>mybatis_step_11</module>
+        <module>mybatis_step_12</module>
     </modules>
 
     <properties>
